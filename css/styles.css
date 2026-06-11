@@ -774,10 +774,40 @@ main { position: relative; z-index: 1; padding-top: 75px; }
   border-bottom: 1px solid var(--border-color);
 }
 
-.video-modal-header h3 {
+.video-modal-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.video-modal-nav h3 {
   font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);
+}
+
+.video-nav-btn {
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+}
+
+.video-nav-btn:hover:not(:disabled) {
+  border-color: var(--green-primary);
+  color: var(--green-primary);
+  background: rgba(46, 204, 113, 0.08);
+}
+
+.video-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 
 .video-close {

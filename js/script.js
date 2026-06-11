@@ -95,6 +95,7 @@ const chapters = [
 
 const VIDEO_PATH = 'https://pub-4f6ca4c749ad4cd681b348fc49148806.r2.dev/Videos/videos/';
 const VIDEO_EXT = '.mp4';
+let currentEpisode = null;
 
 function generateChapters() {
   const grid = document.getElementById('chaptersGrid');
@@ -136,6 +137,7 @@ function playEpisode(num) {
   const filename = `ep${String(num).padStart(2, '0')}${VIDEO_EXT}`;
   const filepath = VIDEO_PATH + filename;
 
+  currentEpisode = num;
   title.textContent = `Episodio ${num}: ${ep ? ep.title : ''}`;
   expectedFile.textContent = filename;
   error.classList.remove('show');
@@ -146,6 +148,8 @@ function playEpisode(num) {
   player.load();
 
   modal.classList.add('show');
+
+  updateNavButtons();
 
   const audioWarning = document.getElementById('audioWarning');
   audioWarning.classList.remove('show');
@@ -189,9 +193,28 @@ function playEpisode(num) {
   };
 }
 
+function updateNavButtons() {
+  const prevBtn = document.getElementById('prevEpisode');
+  const nextBtn = document.getElementById('nextEpisode');
+  if (!prevBtn || !nextBtn) return;
+  const idx = chapters.findIndex(c => c.num === currentEpisode);
+  prevBtn.disabled = idx <= 0;
+  nextBtn.disabled = idx < 0 || idx >= chapters.length - 1;
+}
+
+function goToEpisode(direction) {
+  const idx = chapters.findIndex(c => c.num === currentEpisode);
+  if (idx < 0) return;
+  const newIdx = idx + direction;
+  if (newIdx < 0 || newIdx >= chapters.length) return;
+  playEpisode(chapters[newIdx].num);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('videoClose').addEventListener('click', closeVideo);
   document.getElementById('videoOverlay').addEventListener('click', closeVideo);
+  document.getElementById('prevEpisode').addEventListener('click', () => goToEpisode(-1));
+  document.getElementById('nextEpisode').addEventListener('click', () => goToEpisode(1));
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeVideo();
   });
@@ -221,7 +244,9 @@ function closeVideo() {
   const player = document.getElementById('videoPlayer');
   modal.classList.remove('show');
   player.pause();
-  player.src = '';
+  player.removeAttribute('src');
+  player.load();
+  currentEpisode = null;
 }
 
 function switchSection(sectionId) {
